@@ -543,3 +543,86 @@ lay1 = lay_new(mat = matrix(1, ncol = 1))
 lay2 =lay_bind_col(lay1, lay1, widths = c(1, 1))
 lay_show(lay2)
 lay_grid(list(p1,p2), lay2)
+
+
+
+#———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————Field experiment
+data<-read.csv("Data S13.csv")
+library("ggplot2")
+library("ggpubr")
+library("emmeans")
+data$Block <- factor(sub(".*_", "", data$Group))
+data$Location <- factor(data$Location, levels = c("QZ", "DY"))
+data$Inoculum <- factor(data$Inoculum,
+                        levels = c("Control", "Agr_Ach_Dev"))
+
+data$Group <- factor(
+  paste(data$Inoculum, data$Location, sep = "_"),
+  levels = c("Control_QZ", "Agr_Ach_Dev_QZ",
+             "Control_DY", "Agr_Ach_Dev_DY")
+)
+
+fit <- aov(Grain.yield.per.m2 ~
+             Location/Block + Inoculum + Location:Inoculum,
+           data = data)
+summary(fit)
+
+cmp <- contrast(emmeans(fit, ~ Inoculum | Location), "revpairwise")
+summary(cmp, by = NULL, infer = c(TRUE, TRUE),
+        adjust = "bonferroni")
+
+data$Treatment<- factor(data$Treatment,levels=c("QZControl","QZAgr_Ach_Dev","DYControl","DYAgr_Ach_Dev"))
+p<-ggplot(data =data,aes(x = Treatment,y =Grain.yield.per.m2,color = Treatment)) +
+  stat_boxplot(geom="errorbar",size=1,width=0.3,linetype="solid")+
+  geom_boxplot()+
+  geom_jitter(width=0.2,size=2)+
+  scale_color_manual(values=c("#D4ECEF","#1B457C","#ECABBE","#B3D9F4","#F9D8B7","#ADBDCC","#3D76AF","#76A7C9","#B8D3E2"))+
+  theme_bw()+
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
+  labs(x="",y="Grain yield (g m-2)")+
+  theme(panel.border = element_rect(fill=NA,color="black", size=1, linetype="solid"),axis.text.x=element_text(angle=45,vjust = 0.5,hjust = 0.5,colour='black',size=12))
+p
+
+
+fit <- aov(Grain.number.per.spike ~
+             Location/Block + Inoculum + Location:Inoculum,
+           data = data)
+summary(fit)
+
+cmp <- contrast(emmeans(fit, ~ Inoculum | Location), "revpairwise")
+summary(cmp, by = NULL, infer = c(TRUE, TRUE),
+        adjust = "bonferroni")
+
+data$Treatment<- factor(data$Treatment,levels=c("QZControl","QZAgr_Ach_Dev","DYControl","DYAgr_Ach_Dev"))
+p<-ggplot(data =data,aes(x = Treatment,y =Grain.number.per.spike,color = Treatment)) +
+  stat_boxplot(geom="errorbar",size=1,width=0.3,linetype="solid")+
+  geom_boxplot()+
+  geom_jitter(width=0.2,size=2)+
+  scale_color_manual(values=c("#D4ECEF","#1B457C","#ECABBE","#B3D9F4","#F9D8B7","#ADBDCC","#3D76AF","#76A7C9","#B8D3E2"))+
+  theme_bw()+
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
+  labs(x="",y="Grain number spike -1")+
+  theme(panel.border = element_rect(fill=NA,color="black", size=1, linetype="solid"),axis.text.x=element_text(angle=45,vjust = 0.5,hjust = 0.5,colour='black',size=12))
+p
+
+
+fit <- aov(Shoot.dry.weight ~
+             Location/Block + Inoculum + Location:Inoculum,
+           data = data)
+summary(fit)
+
+cmp <- contrast(emmeans(fit, ~ Inoculum | Location), "revpairwise")
+summary(cmp, by = NULL, infer = c(TRUE, TRUE),
+        adjust = "bonferroni")
+
+data$Treatment<- factor(data$Treatment,levels=c("QZControl","QZAgr_Ach_Dev","DYControl","DYAgr_Ach_Dev"))
+p<-ggplot(data =data,aes(x = Treatment,y =Shoot.dry.weight,color = Treatment)) +
+  stat_boxplot(geom="errorbar",size=1,width=0.3,linetype="solid")+
+  geom_boxplot()+
+  geom_jitter(width=0.2,size=2)+
+  scale_color_manual(values=c("#D4ECEF","#1B457C","#ECABBE","#B3D9F4","#F9D8B7","#ADBDCC","#3D76AF","#76A7C9","#B8D3E2"))+
+  theme_bw()+
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+
+  labs(x="",y="Shoot dry weight (g m-2)")+
+  theme(panel.border = element_rect(fill=NA,color="black", size=1, linetype="solid"),axis.text.x=element_text(angle=45,vjust = 0.5,hjust = 0.5,colour='black',size=12))
+p
